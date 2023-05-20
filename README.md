@@ -156,7 +156,13 @@ public class Belonging {
 ```
 * Obvervação: não usamos a annotation @Id, mas sim @EmbeddedId, pois estamos usando agora a classe ID criada anteriormente como @Embeddable
 
-## D2 - Rodar a aplicação e verificar se as tabelas e seus respectivos relacionamentos foram criados corretamente.
+## D2 - Rodar a aplicação e verificar o erro de sintaxe por conta do atributo year, que é uma palavra reservada do SQL.
+Para corrigir, alterar o nome da coluna com a annotation @Column
+```
+    @Column(name = "game_year")
+    private Integer year;
+```
+## D2 - Rodar novamente a aplicação e verificar se as tabelas e seus respectivos relacionamentos foram criados corretamente.
 ```
 TB_GAME
 ID, GENRE, IMG_URL, LONG_DESCRIPTION, PLATFORMS, SCORE, SHORT_DESCRIPTION, TITLE, GAME_YEAR
