@@ -469,20 +469,35 @@ INSERT INTO tb_belonging (list_id, game_id, position) VALUES (2, 9, 3);
 INSERT INTO tb_belonging (list_id, game_id, position) VALUES (2, 10, 4);
 ```
 
+## D5 - Configurar o profile application-testmy.yml
+Para esse Profile, vamos deixar que o Spring gere o banco de dados assim como foi feito no H2
+* Configurar a dependência do MySQL no pom.xml
+```
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.33</version>
+</dependency>
+```
+
+* Configuração do arquivo yml
+```
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/gameslists_sandro
+    username: root
+    password: 123456
+  jpa:
+    hibernate.ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: true
+```
+
 ## D5 - Voltar o ambiente para desenvolvimento
 spring.profiles.active=${APP_PROFILE:dev}
 
-## D5 - Configurar o CORS_ORIGINS
-O que é o CORS? O CORS (Cross-origin Resource Sharing) é um mecanismo usado para adicionar cabeçalhos HTTP que informam aos navegadores para permitir que uma aplicação Web seja executada em uma origem e acesse recursos de outra origem diferente.
-Criar a classe WebConfig no pacote config 
-* O conteúdo é padrão (CTRL C + CTRL V)
-* Não testei as URLs, por isso não configurei o CORS_ORIGINS no RailWay
-
-## D4 - Testar esteira de CI/CD. RailWay integrado com GitHub
-* Mudar alguma coisa no código e fazer o push no github pra ver a aplicação subindo no RailWay
-
-
-## D4 - Configurar os métodos de ordenação da lista
+## D5 - Configurar os métodos de ordenação da lista
 * Criar um método update customizado no repositório de listas para atualizar a reordenação no BD
 ```
 	@Modifying
@@ -511,7 +526,14 @@ Criar a classe WebConfig no pacote config
 ```
 * Lembrar que a atualização da lista é imdepotente, ou seja, todas as vezes que for rodada gerará um resultado diferente
 
-## D5 - Pré-requisitos para deploy CI/CD na nuvem
+## D5 - Configurar o CORS_ORIGINS
+O que é o CORS? O CORS (Cross-origin Resource Sharing) é um mecanismo usado para adicionar cabeçalhos HTTP que informam aos navegadores para permitir que uma aplicação Web seja executada em uma origem e acesse recursos de outra origem diferente.
+Criar a classe WebConfig no pacote config
+* O conteúdo é padrão (CTRL C + CTRL V)
+* Não testei as URLs, por isso não configurei o CORS_ORIGINS no RailWay
+
+
+## D5 - Pré-requisitos para deploy na esteira CI/CD na nuvem
 * Criar conta no RailWay - http://railway.app
 * Login com o GitHub (conta com mais de 90 dias)
 * Projeto Spring Boot salvo no GitHub
@@ -564,3 +586,6 @@ Criar a classe WebConfig no pacote config
 
 ## D5 - Configurar o Postman com o endpoint na nuvem
 * Criar variável de ambiente no postman
+
+## D5 - Testar esteira de CI/CD. RailWay integrado com GitHub
+* Mudar alguma coisa no código e fazer o push no github pra ver a aplicação subindo no RailWay
