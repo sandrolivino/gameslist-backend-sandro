@@ -3,6 +3,7 @@ package br.com.personal.gameslistbackendsandro.services;
 import br.com.personal.gameslistbackendsandro.dtos.GameDTO;
 import br.com.personal.gameslistbackendsandro.dtos.GameMinDTO;
 import br.com.personal.gameslistbackendsandro.entities.Game;
+import br.com.personal.gameslistbackendsandro.projections.GameMinProjection;
 import br.com.personal.gameslistbackendsandro.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,5 +58,12 @@ public class GameService {
     public GameDTO findById(@PathVariable Long listId) {
         Game result = gameRepository.findById(listId).get();
         return new GameDTO(result);
+    }
+
+    // Esse mapeamento do stream só irá funcionar após a criação do construtor em GameMinDTO que recebe GameMinProjection como parâmetro
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findGamesByGameListId(Long listId) {
+        List<GameMinProjection> games = gameRepository.searchByList(listId);
+        return games.stream().map(GameMinDTO::new).toList();
     }
 }
