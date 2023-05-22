@@ -7,6 +7,7 @@ import br.com.personal.gameslistbackendsandro.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,5 +51,11 @@ public class GameService {
 
         // Opção 03
         // return result.stream().map(GameDTO::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public GameDTO findById(@PathVariable Long listId) {
+        Game result = gameRepository.findById(listId).get();
+        return new GameDTO(result);
     }
 }
