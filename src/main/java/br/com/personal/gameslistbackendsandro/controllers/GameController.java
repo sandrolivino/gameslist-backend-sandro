@@ -1,5 +1,6 @@
 package br.com.personal.gameslistbackendsandro.controllers;
 
+import br.com.personal.gameslistbackendsandro.dtos.GameDTO;
 import br.com.personal.gameslistbackendsandro.dtos.GameMinDTO;
 import br.com.personal.gameslistbackendsandro.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,5 +19,10 @@ public class GameController {
     @RequestMapping
     public List<GameMinDTO> findAll(){
         return gameService.findAll();
+    }
+
+    @RequestMapping(value = "/full")
+    public List<GameDTO> findAllFull(){
+        return gameService.findAllFull();
     }
 }
