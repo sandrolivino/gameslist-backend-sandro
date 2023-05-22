@@ -498,15 +498,34 @@ spring:
 spring.profiles.active=${APP_PROFILE:dev}
 
 ## D5 - Configurar os métodos de ordenação da lista
-* Criar um método update customizado no repositório de listas para atualizar a reordenação no BD
+* Criar o DTO ReplacementDTO, que conterá os dados dos índices de origem e destino para serem passados para o serviço.
 ```
-	@Modifying
-	@Query(nativeQuery = true, 
-		value = "UPDATE tb_belonging SET position = :newPosition WHERE list_id = :listId AND game_id = :gameId")
-	void updateBelongingPosition(Long listId, Long gameId, Integer newPosition);
+public class ReplacementDTO {
+
+	private Integer sourceIndex;
+	private Integer destinationIndex;
+
+	public Integer getSourceIndex() {
+		return sourceIndex;
+	}
+
+	public void setSourceIndex(Integer sourceIndex) {
+		this.sourceIndex = sourceIndex;
+	}
+
+	public Integer getDestinationIndex() {
+		return destinationIndex;
+	}
+
+	public void setDestinationIndex(Integer destinationIndex) {
+		this.destinationIndex = destinationIndex;
+	}
+}
 ```
 
-* Criar o método move em GameLisService para fazer a reordenação do Game na lista
+* Criar um serviço "move" em GameListService que será responsável pela reordanação do Game na GameList
+* Esse serviço conterá o algoritimo que irá pegar o intervalo entre o índice de origem 
+* e o índice de destino e irá atualizar todos os positions dos itens do intervalo, um a um, dentro do for.
 ```
 	@Transactional
 	public void move(Long listId, int sourceIndex, int destinationIndex) {
@@ -524,7 +543,48 @@ spring.profiles.active=${APP_PROFILE:dev}
 		}
 	}
 ```
+* Observe que esse método reutiliza a consulta por lista que fizemos anteriormente: List<GameMinProjection> list = gameRepository.searchByList(listId);
+
+* Criar um método _**update**_ customizado no repositório de listas para atualizar a reordenação no BD
+* Este método irá atualizar a position de acordo com a PK composta entre Game e List
+```
+	@Modifying
+	@Query(nativeQuery = true, 
+		value = "UPDATE tb_belonging SET position = :newPosition WHERE list_id = :listId AND game_id = :gameId")
+	void updateBelongingPosition(Long listId, Long gameId, Integer newPosition);
+```
 * Lembrar que a atualização da lista é imdepotente, ou seja, todas as vezes que for rodada gerará um resultado diferente
+
+* Criar o endpoint "move" em GameListController que irá receber os indices a serem alterados
+```
+	@PostMapping(value = "/{listId}/replacement")
+	public void move(@PathVariable Long listId, @RequestBody ReplacementDTO body) {
+		gameListService.move(listId, body.getSourceIndex(), body.getDestinationIndex());
+	}
+```
+
+## D5 - Testar o endpoint
+* No POSTMAN
+```
+POST
+http://localhost:8080/lists/1/replacement
+
+BODY 
+// Mesmos campos passados no serviço gameListService.move(listId, body.getSourceIndex(), body.getDestinationIndex()) SEM O GET
+{
+    "sourceIndex": 3,
+    "destinationIndex": 1
+}
+```
+
+No H2
+```
+SELECT POSITION, GAME_ID, TITLE FROM TB_BELONGING AS B
+INNER JOIN TB_GAME AS G
+ON G.ID = B.GAME_ID
+WHERE LIST_ID = 1
+ORDER BY POSITION
+```
 
 ## D5 - Configurar o CORS_ORIGINS
 O que é o CORS? O CORS (Cross-origin Resource Sharing) é um mecanismo usado para adicionar cabeçalhos HTTP que informam aos navegadores para permitir que uma aplicação Web seja executada em uma origem e acesse recursos de outra origem diferente.
