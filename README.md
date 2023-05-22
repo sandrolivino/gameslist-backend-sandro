@@ -234,6 +234,21 @@ public class GameMinDTO {
 	// Somente GETTERS
 }
 ```
+* **Atenção:** o construtor de GameMinDTO recebe uma entidade Game, onde é feito o mapeamento dos campos da entidade para os campos do DTO. 
+
+## D3 - Criar o serviço GameService para realizar as transações baásicas: findAll, findById, update, create etc.
+* Criar o primeiro método: findAll()
+```
+    @Autowired
+    GameRepository gameRepository;
+
+    @Transactional(readOnly = true)
+    public List<GameMinDTO> findAll(){
+        List<Game> result = gameRepository.findAll();
+        return result.stream().map(GameMinDTO::new).toList();
+    }
+```
+* **Atenção:** não esquecer de fazer o import do repositório e de anotar o método com @Transactional(readOnly = true) 
 
 ## D3 - Criar o controller de Games. Essa classe será a responsável por expor a entidade Game para os usuários finais.
 ```
@@ -292,7 +307,7 @@ public class GameDTO {
 ```
 * Lembrar também que, como o id pode não existir, devemos fazer um tratamento de exceções: FAZER DEPOIS
 
-## D3 - Criar a classe GameController e criar o método findById
+## D3 - Criar o método findById no controller e no service
 * Lembrar de passar o value "{id}" no @GetMapping.
 ```
 	@GetMapping(value = "/{id}")
